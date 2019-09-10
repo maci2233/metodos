@@ -1,5 +1,29 @@
 from tkinter import *
 
+def prueba_rachas(nums, n):
+    high = 0
+    low = 0
+    R = 0
+    last_change = ''
+    for i in range(n-1):
+        if nums[i] > nums[i+1]:
+            low += 1
+            if last_change != '-':
+                R += 1
+                last_change = '-'
+        elif nums[i] < nums[i+1]:
+            high += 1
+            if last_change != '+':
+                R += 1
+                last_change = '+'
+    u = ((2 * high * low) / (high + low)) + 1
+    o2 = ((2 * high * low) * ((2 * high * low) - high - low)) / ((high + low)**2 * (high + low - 1))
+    o = o2**(1/2)
+    ZR = (R-u) / o
+    print(high, low, R, u, o2, o, ZR)
+
+
+
 root = Tk()
 root.title("Adding")
 
@@ -47,15 +71,16 @@ def addF():
 
             with open('random_nums.txt', 'w') as f:
                 for _ in range(num_n):
+                    #a = 24c = 68m = 37x0 = 85N = 100
                     rand_num = ((numA * num_x + numC) % numM) / numM
                     f.write('{}\n'.format(rand_num))
                     num_x = rand_num
 
             with open('random_nums.txt') as f:
-                lines = f.readlines()
-                for line in lines:
-                    print(line)
-                    
+                numbers = f.readlines()
+                prueba_rachas(numbers, num_n)
+
+
             answer_label.configure(text=answer)
             status_label.configure(text="Success")
         except:
