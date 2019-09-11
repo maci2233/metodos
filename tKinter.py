@@ -31,10 +31,28 @@ def prueba_rachas(nums, n, f):
     else:
         f.write("¿¿ {} > {} ?? NO, por lo tanto se RECHAZA\n\n".format(ZR, z_value))
 
-
+def kolmogorov_smirnov(numbers, n, f):
+    isobreNmenosRi = [] #Creamos una lista que va a contener los valores de i/N-Ri
+    riMenosiMenosUnoSobreN = [] #Creamos una lista que va a contener los valores de Ri-(i-1)/N
+    alpha = 0.21012 #Este numero va a cambiar
+    numbers.sort() #Ordena los numeros random de la lista
+    for i in range(n-1): #loop que pasa por todos los numeros de la lista
+        isobreNmenosRi.append(((i/n)-numbers[i])) # Agrega los numeros de i/N-Ri a la lista
+        riMenosiMenosUnoSobreN.append((numbers[i]-(i-1))/n)#Agrega los numeros Ri-(i-1)/N a la lista
+    
+    
+    dPlus= max(isobreNmenosRi) # Agarra el valor máximo de la lista
+    dMinus= max(riMenosiMenosUnoSobreN) # Agarra el valor máximo de la lista
+    d=max(dPlus,dMinus) #Agarra el valor máximo de ambas listas
+    f.write("----- PRUEBA DE Kolmogorov_Smirnov-----\n\n")
+    #f.write("{}".format(d)) #< -Aqui se imprime el valor de D
+    if d<=alpha: #El valor máximo de ambas listas es comparado con alpha
+        f.write("La hipotesis es aceptada")
+    else:
+        f.write("La hipotesis es rechazada")
 
 root = Tk()
-root.title("Adding")
+root.title("Proyecto")
 
 answer_label = Label(root, text="---")
 answer_label.grid(row=0, column=0)
@@ -90,7 +108,7 @@ def addF():
 
             with open('results.txt', 'w', encoding="utf-8") as f:
                 prueba_rachas(numbers, num_n, f)
-
+                kolmogorov_smirnov(numbers, num_n, f)
 
             answer_label.configure(text=answer)
             status_label.configure(text="Success")
