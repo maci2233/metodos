@@ -1,6 +1,7 @@
 from tkinter import *
+import scipy.stats as st
 
-def prueba_rachas(nums, n):
+def prueba_rachas(nums, n, f):
     high = 0
     low = 0
     R = 0
@@ -19,8 +20,16 @@ def prueba_rachas(nums, n):
     u = ((2 * high * low) / (high + low)) + 1
     o2 = ((2 * high * low) * ((2 * high * low) - high - low)) / ((high + low)**2 * (high + low - 1))
     o = o2**(1/2)
-    ZR = (R-u) / o
-    print(high, low, R, u, o2, o, ZR)
+    ZR = abs((R-u) / o)
+    alpha = 0.05   #ESTE DATO DESPUES SE TIENE QUE LEER DESDE TKINTER
+    z_value = st.norm.ppf(1-(alpha/2))
+    f.write("----- PRUEBA DE RACHAS -----\n\n")
+    f.write("Valor Crítico Obtenido = {}\n".format(ZR))
+    f.write("Valor de la Tabla = {}\n".format(z_value))
+    if ZR > z_value:
+        f.write("¿¿ {} > {} ?? SI, por lo tanto se ACEPTA\n\n".format(ZR, z_value))
+    else:
+        f.write("¿¿ {} > {} ?? NO, por lo tanto se RECHAZA\n\n".format(ZR, z_value))
 
 
 
@@ -71,14 +80,16 @@ def addF():
 
             with open('random_nums.txt', 'w') as f:
                 for _ in range(num_n):
-                    #a = 24c = 68m = 37x0 = 85N = 100
+                    #a = 24c = 68m = 37x0 = 85N = 40
                     rand_num = ((numA * num_x + numC) % numM) / numM
                     f.write('{}\n'.format(rand_num))
                     num_x = rand_num
 
-            with open('random_nums.txt') as f:
-                numbers = f.readlines()
-                prueba_rachas(numbers, num_n)
+            with open('random_nums.txt', 'r') as f:
+                numbers = [float(i) for i in f.readlines()]
+
+            with open('results.txt', 'w', encoding="utf-8") as f:
+                prueba_rachas(numbers, num_n, f)
 
 
             answer_label.configure(text=answer)
