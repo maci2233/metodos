@@ -1,28 +1,29 @@
 from tkinter import *
 import scipy.stats as st
 
+
 def prueba_rachas(nums, n, f):
     high = 0
     low = 0
     R = 0
     last_change = ''
-    for i in range(n-1):
-        if nums[i] > nums[i+1]:
+    for i in range(n - 1):
+        if nums[i] > nums[i + 1]:
             low += 1
             if last_change != '-':
                 R += 1
                 last_change = '-'
-        elif nums[i] < nums[i+1]:
+        elif nums[i] < nums[i + 1]:
             high += 1
             if last_change != '+':
                 R += 1
                 last_change = '+'
     u = ((2 * high * low) / (high + low)) + 1
-    o2 = ((2 * high * low) * ((2 * high * low) - high - low)) / ((high + low)**2 * (high + low - 1))
-    o = o2**(1/2)
-    ZR = abs((R-u) / o)
-    alpha = 0.05   #ESTE DATO DESPUES SE TIENE QUE LEER DESDE TKINTER
-    z_value = st.norm.ppf(1-(alpha/2))
+    o2 = ((2 * high * low) * ((2 * high * low) - high - low)) / ((high + low) ** 2 * (high + low - 1))
+    o = o2 ** (1 / 2)
+    ZR = abs((R - u) / o)
+    alpha = 0.05  # ESTE DATO DESPUES SE TIENE QUE LEER DESDE TKINTER
+    z_value = st.norm.ppf(1 - (alpha / 2))
     f.write("----- PRUEBA DE RACHAS -----\n\n")
     f.write("Valor Crítico Obtenido = {}\n".format(ZR))
     f.write("Valor de la Tabla = {}\n".format(z_value))
@@ -31,25 +32,27 @@ def prueba_rachas(nums, n, f):
     else:
         f.write("¿¿ {} > {} ?? NO, por lo tanto se RECHAZA\n\n".format(ZR, z_value))
 
+
 def kolmogorov_smirnov(numbers, n, f):
-    isobreNmenosRi = [] #Creamos una lista que va a contener los valores de i/N-Ri
-    riMenosiMenosUnoSobreN = [] #Creamos una lista que va a contener los valores de Ri-(i-1)/N
-    alpha = 0.21012 #Este numero va a cambiar
-    numbers.sort() #Ordena los numeros random de la lista
-    for i in range(n-1): #loop que pasa por todos los numeros de la lista
-        isobreNmenosRi.append(((i/n)-numbers[i])) # Agrega los numeros de i/N-Ri a la lista
-        riMenosiMenosUnoSobreN.append((numbers[i]-(i-1))/n)#Agrega los numeros Ri-(i-1)/N a la lista
+    isobreNmenosRi = []  # Creamos una lista que va a contener los valores de i/N-Ri
+    riMenosiMenosUnoSobreN = []  # Creamos una lista que va a contener los valores de Ri-(i-1)/N
+    alpha: float = 0.21012  # Este numero va a cambiar
+    print(numbers)
     
-    
-    dPlus= max(isobreNmenosRi) # Agarra el valor máximo de la lista
-    dMinus= max(riMenosiMenosUnoSobreN) # Agarra el valor máximo de la lista
-    d=max(dPlus,dMinus) #Agarra el valor máximo de ambas listas
+    for i in range(n - 1):  # loop que pasa por todos los numeros de la lista
+        isobreNmenosRi.append(((i / n) - numbers[i]))  # Agrega los numeros de i/N-Ri a la lista
+        riMenosiMenosUnoSobreN.append((numbers[i] - (i - 1)) / n)  # Agrega los numeros Ri-(i-1)/N a la lista
+
+    dPlus = max(isobreNmenosRi)  # Agarra el valor máximo de la lista
+    dMinus = max(riMenosiMenosUnoSobreN)  # Agarra el valor máximo de la lista
+    d = max(dPlus, dMinus)  # Agarra el valor máximo de ambas listas
     f.write("----- PRUEBA DE Kolmogorov_Smirnov-----\n\n")
-    #f.write("{}".format(d)) #< -Aqui se imprime el valor de D
+    f.write("{}".format(d)) #< -Aqui se imprime el valor de D
     if d<=alpha: #El valor máximo de ambas listas es comparado con alpha
         f.write("La hipotesis es aceptada")
-    else:
-        f.write("La hipotesis es rechazada")
+else:
+    f.write("La hipotesis es rechazada")
+
 
 root = Tk()
 root.title("Proyecto")
@@ -87,6 +90,7 @@ label5.grid(row=5, column=0)
 num5_txtbx = Entry(root)
 num5_txtbx.grid(row=5, column=1)
 
+
 def addF():
     if (num1_txtbx.get() and num2_txtbx.get() and num3_txtbx.get() and num4_txtbx.get() and num5_txtbx.get() != ""):
         try:
@@ -95,27 +99,28 @@ def addF():
             numM = int(num3_txtbx.get())
             num_x = int(num4_txtbx.get())
             num_n = int(num5_txtbx.get())
-
+            
             with open('random_nums.txt', 'w') as f:
                 for _ in range(num_n):
-                    #a = 24c = 68m = 37x0 = 85N = 40
-                    rand_num = ((numA * num_x + numC) % numM) / numM
-                    f.write('{}\n'.format(rand_num))
+                    # a = 24, c = 68, m = 37, x0 = 85, N = 40
+                    rand_num = ((numA * num_x + numC) % numM)
                     num_x = rand_num
-
+                    rand_num /= numM
+                    f.write('{}\n'.format(rand_num))
+        
             with open('random_nums.txt', 'r') as f:
                 numbers = [float(i) for i in f.readlines()]
-
-            with open('results.txt', 'w', encoding="utf-8") as f:
-                prueba_rachas(numbers, num_n, f)
-                kolmogorov_smirnov(numbers, num_n, f)
-
+    
+    with open('results.txt', 'w', encoding="utf-8") as f:
+        prueba_rachas(numbers, num_n, f)
+        kolmogorov_smirnov(numbers, num_n, f)
+            
             answer_label.configure(text=answer)
             status_label.configure(text="Success")
         except:
             status_label.configure(text="invalid input, check your input types")
-        else:
-            status_label.configure(text="fill in all the required fields")
+    else:
+        status_label.configure(text="fill in all the required fields")
 
 
 calculate_button = Button(root, text="calculate", command=addF)
