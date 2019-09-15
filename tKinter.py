@@ -2,7 +2,7 @@ from tkinter import *
 import scipy.stats as st
 
 
-def prueba_rachas(nums, n, f):
+def prueba_rachas(nums, n, f, alpha):
     high = 0
     low = 0
     R = 0
@@ -18,19 +18,24 @@ def prueba_rachas(nums, n, f):
             if last_change != '+':
                 R += 1
                 last_change = '+'
-    u = ((2 * high * low) / (high + low)) + 1
-    o2 = ((2 * high * low) * ((2 * high * low) - high - low)) / ((high + low) ** 2 * (high + low - 1))
-    o = o2 ** (1 / 2)
-    ZR = abs((R - u) / o)
-    alpha = 0.05  # ESTE DATO DESPUES SE TIENE QUE LEER DESDE TKINTER
-    z_value = st.norm.ppf(1 - (alpha / 2))
     f.write("----- PRUEBA DE RACHAS -----\n\n")
-    f.write("Valor Crítico Obtenido = {}\n".format(ZR))
-    f.write("Valor de la Tabla = {}\n".format(z_value))
-    if ZR > z_value:
-        f.write("¿¿ {} > {} ?? SI, por lo tanto se ACEPTA\n\n".format(ZR, z_value))
-    else:
-        f.write("¿¿ {} > {} ?? NO, por lo tanto se RECHAZA\n\n".format(ZR, z_value))
+    try:
+        u = ((2 * high * low) / (high + low)) + 1
+        o2 = ((2 * high * low) * ((2 * high * low) - high - low)) / ((high + low) ** 2 * (high + low - 1))
+        o = o2 ** (1 / 2)
+        ZR = abs((R - u) / o)
+        #alpha = 0.05  # ESTE DATO DESPUES SE TIENE QUE LEER DESDE TKINTER
+        z_value = st.norm.ppf(1 - (alpha / 2))
+
+        f.write("Valor Crítico Obtenido = {}\n".format(ZR))
+        f.write("Valor de la Tabla = {}\n".format(z_value))
+        if ZR > z_value:
+            f.write("¿¿ {} > {} ?? SI, por lo tanto se ACEPTA\n\n".format(ZR, z_value))
+        else:
+            f.write("¿¿ {} > {} ?? NO, por lo tanto se RECHAZA\n\n".format(ZR, z_value))
+    except ZeroDivisionError:
+        print("La prueba no se puede llevar a cabo\n\n")
+
 
 
 def kolmogorov_smirnov(numbers, n, f):
@@ -52,6 +57,9 @@ def kolmogorov_smirnov(numbers, n, f):
         f.write("La hipotesis es aceptada")
     else:
         f.write("La hipotesis es rechazada")
+
+def scale_to_interval(nums, min, max):
+    pass
 
 
 root = Tk()
@@ -90,15 +98,37 @@ label5.grid(row=5, column=0)
 num5_txtbx = Entry(root)
 num5_txtbx.grid(row=5, column=1)
 
+label6 = Label(root, text="Introduce alpha")
+label6.grid(row=6, column=0)
+
+num6_txtbx = Entry(root)
+num6_txtbx.grid(row=6, column=1)
+
+label7 = Label(root, text="Introduce min")
+label7.grid(row=7, column=0)
+
+num7_txtbx = Entry(root)
+num7_txtbx.grid(row=7, column=1)
+
+label8 = Label(root, text="Introduce max")
+label8.grid(row=8, column=0)
+
+num8_txtbx = Entry(root)
+num8_txtbx.grid(row=8, column=1)
+
 
 def addF():
-    if (num1_txtbx.get() and num2_txtbx.get() and num3_txtbx.get() and num4_txtbx.get() and num5_txtbx.get() != ""):
+    if (num1_txtbx.get() != "" and num2_txtbx.get() != "" and num3_txtbx.get() != "" and num4_txtbx.get() != "" \
+        and num5_txtbx.get() != "" and num6_txtbx.get() != "" and num7_txtbx.get() != "" and num8_txtbx.get() != ""):
         try:
             numA = int(num1_txtbx.get())
             numC = int(num2_txtbx.get())
             numM = int(num3_txtbx.get())
             num_x = int(num4_txtbx.get())
             num_n = int(num5_txtbx.get())
+            num_alpha = float(num6_txtbx.get())
+            num_min = int(num7_txtbx.get())
+            num_max = int(num8_txtbx.get())
 
             with open('random_nums.txt', 'w') as f:
                 for _ in range(num_n):
@@ -111,22 +141,23 @@ def addF():
             with open('random_nums.txt', 'r') as f:
                 numbers = [float(i) for i in f.readlines()]
 
+
             with open('results.txt', 'w', encoding="utf-8") as f:
-                prueba_rachas(numbers, num_n, f)
+                prueba_rachas(numbers, num_n, f, num_alpha)
                 kolmogorov_smirnov(numbers, num_n, f)
 
-            answer_label.configure(text=answer)
+            #answer_label.configure(text=answer)
             status_label.configure(text="Success")
-        except:
+        except ValueError:
             status_label.configure(text="invalid input, check your input types")
     else:
         status_label.configure(text="fill in all the required fields")
 
 
 calculate_button = Button(root, text="calculate", command=addF)
-calculate_button.grid(row=6, column=0, columnspan=2)
+calculate_button.grid(row=9, column=0, columnspan=2)
 
 status_label = Label(root, height=5, width=25, bg="black", fg="#00FF00", text="---", wraplength=150)
-status_label.grid(row=7, column=0, columnspan=2)
+status_label.grid(row=10, column=0, columnspan=2)
 
 root.mainloop()
