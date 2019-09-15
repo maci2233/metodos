@@ -34,7 +34,7 @@ def prueba_rachas(nums, n, f, alpha):
         else:
             f.write("¿¿ {} > {} ?? NO, por lo tanto se RECHAZA\n\n".format(ZR, z_value))
     except ZeroDivisionError:
-        print("La prueba no se puede llevar a cabo\n\n")
+        f.write("La prueba no se puede llevar a cabo\n\n")
 
 
 
@@ -59,8 +59,10 @@ def kolmogorov_smirnov(numbers, n, f):
         f.write("La hipotesis es rechazada")
 
 def scale_to_interval(nums, min, max):
-    pass
-
+    with open("random_nums_interval.txt", "w") as f:
+        for num in nums:
+            scaled_num = (max - min) * num + min
+            f.write("{}\n".format(scaled_num))
 
 root = Tk()
 root.title("Proyecto")
@@ -127,8 +129,8 @@ def addF():
             num_x = int(num4_txtbx.get())
             num_n = int(num5_txtbx.get())
             num_alpha = float(num6_txtbx.get())
-            num_min = int(num7_txtbx.get())
-            num_max = int(num8_txtbx.get())
+            num_min = float(num7_txtbx.get())
+            num_max = float(num8_txtbx.get())
 
             with open('random_nums.txt', 'w') as f:
                 for _ in range(num_n):
@@ -141,10 +143,11 @@ def addF():
             with open('random_nums.txt', 'r') as f:
                 numbers = [float(i) for i in f.readlines()]
 
-
             with open('results.txt', 'w', encoding="utf-8") as f:
                 prueba_rachas(numbers, num_n, f, num_alpha)
                 kolmogorov_smirnov(numbers, num_n, f)
+                #Prueba Chi-Cuadrada
+                scale_to_interval(numbers, num_min, num_max)
 
             #answer_label.configure(text=answer)
             status_label.configure(text="Success")
