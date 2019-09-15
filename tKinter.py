@@ -38,7 +38,7 @@ def kolmogorov_smirnov(numbers, n, f):
     riMenosiMenosUnoSobreN = []  # Creamos una lista que va a contener los valores de Ri-(i-1)/N
     alpha: float = 0.21012  # Este numero va a cambiar
     print(numbers)
-    
+
     for i in range(n - 1):  # loop que pasa por todos los numeros de la lista
         isobreNmenosRi.append(((i / n) - numbers[i]))  # Agrega los numeros de i/N-Ri a la lista
         riMenosiMenosUnoSobreN.append((numbers[i] - (i - 1)) / n)  # Agrega los numeros Ri-(i-1)/N a la lista
@@ -50,8 +50,8 @@ def kolmogorov_smirnov(numbers, n, f):
     f.write("{}".format(d)) #< -Aqui se imprime el valor de D
     if d<=alpha: #El valor máximo de ambas listas es comparado con alpha
         f.write("La hipotesis es aceptada")
-else:
-    f.write("La hipotesis es rechazada")
+    else:
+        f.write("La hipotesis es rechazada")
 
 
 root = Tk()
@@ -99,7 +99,7 @@ def addF():
             numM = int(num3_txtbx.get())
             num_x = int(num4_txtbx.get())
             num_n = int(num5_txtbx.get())
-            
+
             with open('random_nums.txt', 'w') as f:
                 for _ in range(num_n):
                     # a = 24, c = 68, m = 37, x0 = 85, N = 40
@@ -107,14 +107,14 @@ def addF():
                     num_x = rand_num
                     rand_num /= numM
                     f.write('{}\n'.format(rand_num))
-        
+
             with open('random_nums.txt', 'r') as f:
                 numbers = [float(i) for i in f.readlines()]
-    
-    with open('results.txt', 'w', encoding="utf-8") as f:
-        prueba_rachas(numbers, num_n, f)
-        kolmogorov_smirnov(numbers, num_n, f)
-            
+
+            with open('results.txt', 'w', encoding="utf-8") as f:
+                prueba_rachas(numbers, num_n, f)
+                kolmogorov_smirnov(numbers, num_n, f)
+
             answer_label.configure(text=answer)
             status_label.configure(text="Success")
         except:
