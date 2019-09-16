@@ -59,24 +59,38 @@ def kolmogorov_smirnov(numbers, n, f):
         f.write("La hipotesis es rechazada")
 
 
-def chi_cuadrada(numbers, num_n, f, num_alpha):
-    
-    Observed = []  # Creamos una lista de valores observados en los intervalos
-    Expected = []  # Creamos una lista de valores esperados en los intervalos
-    
-    alpha: float = 0.21012  # Este numero va a cambiar
-    print(numbers)
-    
-    for i in range(n - 1):  # loop que pasa por todos los numeros de la lista
-        Observed.append(((i / n) - numbers[i]))  # Agrega los numeros de i/N-Ri a la lista
-        Expected.append((numbers[i] - (i - 1)) / n)  # Agrega los numeros Ri-(i-1)/N a la lista
-    
-    dPlus = max(isobreNmenosRi)  # Agarra el valor máximo de la lista
-    dMinus = max(riMenosiMenosUnoSobreN)  # Agarra el valor máximo de la lista
-    d = max(dPlus, dMinus)  # Agarra el valor máximo de ambas listas
-    f.write("----- PRUEBA DE Kolmogorov_Smirnov-----\n\n")
-    f.write("{}".format(d)) #< -Aqui se imprime el valor de D
-    if d<=alpha: #El valor máximo de ambas listas es comparado con alpha
+def chi_cuadrada(numbers, num_n, f, num_alpha, num_min, num_max):
+
+    Observed = []
+    Expected = []
+    ListFinal = []
+    dif = num_max - num_min
+    intervalo = dif / 10
+    rango_min = num_min
+    rango_max = num_min + intervalo
+    grados_libertad = 9 #num clases - 1
+
+    for i in range(9):  # loop pasa por todas las clases
+        Observed[i] = 0 # Inicializamos una lista de valores observados en los intervalos
+        Expected[i] = num_n/10 # Creamos una lista de valores esperados en los intervalos
+
+    for i in range(9):  # loop pasa por todas las clases
+        for j in range (num_n - 1): # loop que pasa por todos los numeros aleatorios
+            if (numbers[j] >= rango_min and numbers[j] < rango_max):
+                Observed[i] = Observed[i]+1
+        rango_min=rango_max
+        rango_max=rango_max+intervalo
+
+    for i in range(9):  # loop pasa por todas las clases
+        ListFinal[i] = ((Observed[i]-Expected[i]) ** 2 ) / Expected[i]
+
+    ResChiCuadrada = sum(ListFinal)
+
+    f.write("----- PRUEBA DE Chi Cuadrada-----\n\n")
+    f.write("{}".format(ResChiCuadrada)) #< -Aqui se imprime el valor de la ResChiCuadrada
+
+    alpha: float = 16.92
+    if ResChiCuadrada<=alpha: #El valor total es comparado con alpha
         f.write("La hipotesis es aceptada")
     else:
         f.write("La hipotesis es rechazada")
@@ -167,11 +181,11 @@ def addF():
                 numbers = [float(i) for i in f.readlines()]
         
         with open('results.txt', 'w', encoding="utf-8") as f:
+            scale_to_interval(numbers, num_min, num_max)
             prueba_rachas(numbers, num_n, f, num_alpha)
-                kolmogorov_smirnov(numbers, num_n, f)
-                chi_cuadrada(numbers, num_n, f, num_alpha)
-                scale_to_interval(numbers, num_min, num_max)
-            
+            kolmogorov_smirnov(numbers, num_n, f)
+            chi_cuadrada(numbers, num_n, f, num_alpha, num_min, num_max)
+
             #answer_label.configure(text=answer)
             status_label.configure(text="Success")
         except ValueError:
