@@ -77,7 +77,6 @@ def chi_cuadrada(numbers, num_n, f, alpha, num_min, num_max):
         Expected.append(num_n/10) # Creamos una lista de valores esperados en los intervalos
 
     for i in range(10):  # loop pasa por todas las clases
-        print("Ciclo de rangos -------------------------------")
         for j in range (num_n): # loop que pasa por todos los numeros aleatorios
             if (numbers[j] >= rango_min and numbers[j] < rango_max):
                 Observed[i] +=1
@@ -89,7 +88,6 @@ def chi_cuadrada(numbers, num_n, f, alpha, num_min, num_max):
         ListFinal.append(((Observed[i]-Expected[i]) ** 2 ) / Expected[i])
 
     ResChiCuadrada = sum(ListFinal)
-
     
     f.write("\n\n ----- PRUEBA DE Chi Cuadrada-----\n\n")
     f.write("Resultados de Prueba Chi Cuadrada = {} \n\n".format(ResChiCuadrada)) #< -Aqui se imprime el valor de la ResChiCuadrada
@@ -192,7 +190,7 @@ def addF():
             with open('results.txt', 'w', encoding="utf-8") as f:
                 scale_to_interval(numbers, num_min, num_max)
                 prueba_rachas(numbers, num_n, f, num_alpha)
-                kolmogorov_smirnov(numbers, num_n, f)
+                kolmogorov_smirnov(numbers, num_n, f, num_alpha)
                 chi_cuadrada(numbersI, num_n, f, num_alpha, num_min, num_max)
 
             #answer_label.configure(text=answer)
