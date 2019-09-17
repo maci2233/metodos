@@ -33,8 +33,8 @@ def prueba_rachas(nums, n, f, alpha):
             f.write("¿¿ {} > {} ?? SI, por lo tanto se ACEPTA\n\n".format(ZR, z_value))
         else:
             f.write("¿¿ {} > {} ?? NO, por lo tanto se RECHAZA\n\n".format(ZR, z_value))
-except ZeroDivisionError:
-    f.write("La prueba no se puede llevar a cabo\n\n")
+    except ZeroDivisionError:
+        f.write("La prueba no se puede llevar a cabo\n\n")
 
 
 
@@ -59,7 +59,7 @@ def kolmogorov_smirnov(numbers, n, f):
         f.write("La hipotesis es rechazada")
 
 
-def chi_cuadrada(numbers, num_n, f, num_alpha, num_min, num_max):
+def chi_cuadrada(numbers, num_n, f, alpha, num_min, num_max):
 
     Observed = []
     Expected = []
@@ -68,32 +68,35 @@ def chi_cuadrada(numbers, num_n, f, num_alpha, num_min, num_max):
     intervalo = dif / 10
     rango_min = num_min
     rango_max = num_min + intervalo
-    grados_libertad = 9 #num clases - 1
 
-    for i in range(9):  # loop pasa por todas las clases
-        Observed[i] = 0 # Inicializamos una lista de valores observados en los intervalos
-        Expected[i] = num_n/10 # Creamos una lista de valores esperados en los intervalos
+    for i in range(10):  # loop pasa por todas las clases
+        Observed.append(0) # Inicializamos una lista de valores observados en los intervalos
+        Expected.append(num_n/10) # Creamos una lista de valores esperados en los intervalos
 
-    for i in range(9):  # loop pasa por todas las clases
-        for j in range (num_n - 1): # loop que pasa por todos los numeros aleatorios
+    for i in range(10):  # loop pasa por todas las clases
+        print("Ciclo de rangos -------------------------------")
+        for j in range (num_n): # loop que pasa por todos los numeros aleatorios
             if (numbers[j] >= rango_min and numbers[j] < rango_max):
-                Observed[i] = Observed[i]+1
+                Observed[i] +=1
         rango_min=rango_max
         rango_max=rango_max+intervalo
 
-    for i in range(9):  # loop pasa por todas las clases
-        ListFinal[i] = ((Observed[i]-Expected[i]) ** 2 ) / Expected[i]
+
+    for i in range(10):  # loop pasa por todas las clases
+        ListFinal.append(((Observed[i]-Expected[i]) ** 2 ) / Expected[i])
 
     ResChiCuadrada = sum(ListFinal)
 
-    f.write("----- PRUEBA DE Chi Cuadrada-----\n\n")
-    f.write("{}".format(ResChiCuadrada)) #< -Aqui se imprime el valor de la ResChiCuadrada
+    
+    f.write("\n\n ----- PRUEBA DE Chi Cuadrada-----\n\n")
+    f.write("Resultados de Prueba Chi Cuadrada = {} \n\n".format(ResChiCuadrada)) #< -Aqui se imprime el valor de la ResChiCuadrada
+    f.write("Resultados de Tabla Chi Cuadrada = {} \n\n".format(st.chi.ppf(1-alpha, 9))) #< -Aqui se imprime el valor de la tabla
+    f.write("Si el valor de la prueba es menor que el valor de la tabla la hipotesis es aceptada, por lo tanto: ")
 
-    alpha: float = 16.92
-    if ResChiCuadrada<=alpha: #El valor total es comparado con alpha
-        f.write("La hipotesis es aceptada")
+    if ResChiCuadrada<=st.chi.ppf(1-alpha, 9): #El valor total es comparado con alpha
+        f.write("La hipotesis es aceptada \n\n")
     else:
-        f.write("La hipotesis es rechazada")
+        f.write("La hipotesis es rechazada \n\n")
 
 def scale_to_interval(nums, min, max):
     with open("random_nums_interval.txt", "w") as f:
@@ -179,19 +182,22 @@ def addF():
         
             with open('random_nums.txt', 'r') as f:
                 numbers = [float(i) for i in f.readlines()]
+                
+            with open('random_nums_interval.txt', 'r') as g:
+                numbersI = [float(i) for i in g.readlines()]
         
-        with open('results.txt', 'w', encoding="utf-8") as f:
-            scale_to_interval(numbers, num_min, num_max)
-            prueba_rachas(numbers, num_n, f, num_alpha)
-            kolmogorov_smirnov(numbers, num_n, f)
-            chi_cuadrada(numbers, num_n, f, num_alpha, num_min, num_max)
+            with open('results.txt', 'w', encoding="utf-8") as f:
+                scale_to_interval(numbers, num_min, num_max)
+                prueba_rachas(numbers, num_n, f, num_alpha)
+                kolmogorov_smirnov(numbers, num_n, f)
+                chi_cuadrada(numbersI, num_n, f, num_alpha, num_min, num_max)
 
             #answer_label.configure(text=answer)
             status_label.configure(text="Success")
         except ValueError:
             status_label.configure(text="invalid input, check your input types")
-else:
-    status_label.configure(text="fill in all the required fields")
+    else:
+        status_label.configure(text="fill in all the required fields")
 
 
 calculate_button = Button(root, text="calculate", command=addF)
