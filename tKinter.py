@@ -26,7 +26,7 @@ def prueba_rachas(nums, n, f, alpha):
         ZR = abs((R - u) / o)
         #alpha = 0.05  # ESTE DATO DESPUES SE TIENE QUE LEER DESDE TKINTER
         z_value = st.norm.ppf(1 - (alpha / 2))
-
+        
         f.write("Valor Crítico Obtenido = {}\n".format(ZR))
         f.write("Valor de la Tabla = {}\n".format(z_value))
         if ZR > z_value:
@@ -41,12 +41,10 @@ def prueba_rachas(nums, n, f, alpha):
 def kolmogorov_smirnov(numbers, n, f, alpha):
     isobreNmenosRi = []  # Creamos una lista que va a contener los valores de i/N-Ri
     riMenosiMenosUnoSobreN = []  # Creamos una lista que va a contener los valores de Ri-(i-1)/N
-    alpha = 0.05  # Este numero va a cambiar¡
-
     for i in range(n - 1):  # loop que pasa por todos los numeros de la lista
         isobreNmenosRi.append(((i / n) - numbers[i]))  # Agrega los numeros de i/N-Ri a la lista
         riMenosiMenosUnoSobreN.append((numbers[i] - (i - 1)) / n)  # Agrega los numeros Ri-(i-1)/N a la lista
-
+    
     dPlus = max(isobreNmenosRi)  # Agarra el valor máximo de la lista
     dMinus = max(riMenosiMenosUnoSobreN)  # Agarra el valor máximo de la lista
     d = max(dPlus, dMinus)  # Agarra el valor máximo de ambas listas
@@ -62,6 +60,46 @@ def kolmogorov_smirnov(numbers, n, f, alpha):
         f.write("La hipotesis es rechazada")#Si Da es mayor que D, la muestra es rechazada
 
 #---------------------------------------------------------------------------------------
+
+
+def chi_cuadrada(numbers, num_n, f, alpha, num_min, num_max):
+
+    Observed = []
+    Expected = []
+    ListFinal = []
+    dif = num_max - num_min
+    intervalo = dif / 10
+    rango_min = num_min
+    rango_max = num_min + intervalo
+
+    for i in range(10):  # loop pasa por todas las clases
+        Observed.append(0) # Inicializamos una lista de valores observados en los intervalos
+        Expected.append(num_n/10) # Creamos una lista de valores esperados en los intervalos
+
+    for i in range(10):  # loop pasa por todas las clases
+        print("Ciclo de rangos -------------------------------")
+        for j in range (num_n): # loop que pasa por todos los numeros aleatorios
+            if (numbers[j] >= rango_min and numbers[j] < rango_max):
+                Observed[i] +=1
+        rango_min=rango_max
+        rango_max=rango_max+intervalo
+
+
+    for i in range(10):  # loop pasa por todas las clases
+        ListFinal.append(((Observed[i]-Expected[i]) ** 2 ) / Expected[i])
+
+    ResChiCuadrada = sum(ListFinal)
+
+    
+    f.write("\n\n ----- PRUEBA DE Chi Cuadrada-----\n\n")
+    f.write("Resultados de Prueba Chi Cuadrada = {} \n\n".format(ResChiCuadrada)) #< -Aqui se imprime el valor de la ResChiCuadrada
+    f.write("Resultados de Tabla Chi Cuadrada = {} \n\n".format(st.chi.ppf(1-alpha, 9))) #< -Aqui se imprime el valor de la tabla
+    f.write("Si el valor de la prueba es menor que el valor de la tabla la hipotesis es aceptada, por lo tanto: ")
+
+    if ResChiCuadrada<=st.chi.ppf(1-alpha, 9): #El valor total es comparado con alpha
+        f.write("La hipotesis es aceptada \n\n")
+    else:
+        f.write("La hipotesis es rechazada \n\n")
 
 def scale_to_interval(nums, min, max):
     with open("random_nums_interval.txt", "w") as f:
@@ -136,7 +174,7 @@ def addF():
             num_alpha = float(num6_txtbx.get())
             num_min = float(num7_txtbx.get())
             num_max = float(num8_txtbx.get())
-
+            
             with open('random_nums.txt', 'w') as f:
                 for _ in range(num_n):
                     # a = 24, c = 68, m = 37, x0 = 85, N = 40
@@ -144,15 +182,18 @@ def addF():
                     num_x = rand_num
                     rand_num /= numM
                     f.write('{}\n'.format(rand_num))
-
+        
             with open('random_nums.txt', 'r') as f:
                 numbers = [float(i) for i in f.readlines()]
-
+                
+            with open('random_nums_interval.txt', 'r') as g:
+                numbersI = [float(i) for i in g.readlines()]
+        
             with open('results.txt', 'w', encoding="utf-8") as f:
-                prueba_rachas(numbers, num_n, f, num_alpha)
-                kolmogorov_smirnov(numbers, num_n, f, num_alpha) #Prueba de Kolmogorov Smmirnov
-                #Prueba Chi-Cuadrada
                 scale_to_interval(numbers, num_min, num_max)
+                prueba_rachas(numbers, num_n, f, num_alpha)
+                kolmogorov_smirnov(numbers, num_n, f)
+                chi_cuadrada(numbersI, num_n, f, num_alpha, num_min, num_max)
 
             #answer_label.configure(text=answer)
             status_label.configure(text="Los datos han sido capturados con exito, puedes encontrar tus resultados")
