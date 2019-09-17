@@ -36,13 +36,12 @@ def prueba_rachas(nums, n, f, alpha):
     except ZeroDivisionError:
         f.write("La prueba no se puede llevar a cabo\n\n")
 
+#---------------------------kolmogorov_smirnov-------------------------------------------
 
-
-def kolmogorov_smirnov(numbers, n, f):
+def kolmogorov_smirnov(numbers, n, f, alpha):
     isobreNmenosRi = []  # Creamos una lista que va a contener los valores de i/N-Ri
     riMenosiMenosUnoSobreN = []  # Creamos una lista que va a contener los valores de Ri-(i-1)/N
-    alpha: float = 0.21012  # Este numero va a cambiar
-    print(numbers)
+    alpha = 0.05  # Este numero va a cambiar¡
 
     for i in range(n - 1):  # loop que pasa por todos los numeros de la lista
         isobreNmenosRi.append(((i / n) - numbers[i]))  # Agrega los numeros de i/N-Ri a la lista
@@ -51,12 +50,18 @@ def kolmogorov_smirnov(numbers, n, f):
     dPlus = max(isobreNmenosRi)  # Agarra el valor máximo de la lista
     dMinus = max(riMenosiMenosUnoSobreN)  # Agarra el valor máximo de la lista
     d = max(dPlus, dMinus)  # Agarra el valor máximo de ambas listas
+
     f.write("----- PRUEBA DE Kolmogorov_Smirnov-----\n\n")
-    f.write("{}".format(d)) #< -Aqui se imprime el valor de D
-    if d<=alpha: #El valor máximo de ambas listas es comparado con alpha
-        f.write("La hipotesis es aceptada")
+    f.write("Da = {}\n\n".format(st.ksone.ppf(1-alpha/2,20))) #< -Aqui se imprime el valor de D
+    f.write("D = {}\n\n".format(d)) #< -Aqui se imprime el valor de D
+    f.write("Si el valor estadístico D > D, la muestra es rechazada, por lo tanto =\n\n")
+    
+    if st.ksone.ppf(1-alpha/2,20)>=d: #El valor de la tabla es comparado con D
+        f.write("La hipotesis es aceptada") #Si D es Mayor que Da, la muestra es aceptada
     else:
-        f.write("La hipotesis es rechazada")
+        f.write("La hipotesis es rechazada")#Si Da es mayor que D, la muestra es rechazada
+
+#---------------------------------------------------------------------------------------
 
 def scale_to_interval(nums, min, max):
     with open("random_nums_interval.txt", "w") as f:
@@ -145,16 +150,16 @@ def addF():
 
             with open('results.txt', 'w', encoding="utf-8") as f:
                 prueba_rachas(numbers, num_n, f, num_alpha)
-                kolmogorov_smirnov(numbers, num_n, f)
+                kolmogorov_smirnov(numbers, num_n, f, num_alpha) #Prueba de Kolmogorov Smmirnov
                 #Prueba Chi-Cuadrada
                 scale_to_interval(numbers, num_min, num_max)
 
             #answer_label.configure(text=answer)
-            status_label.configure(text="Success")
+            status_label.configure(text="Los datos han sido capturados con exito, puedes encontrar tus resultados")
         except ValueError:
-            status_label.configure(text="invalid input, check your input types")
+            status_label.configure(text="Puedes encontrar tu '"".txt""' con tus resultados")
     else:
-        status_label.configure(text="fill in all the required fields")
+        status_label.configure(text="Favor de llenar todos los datos")
 
 
 calculate_button = Button(root, text="calculate", command=addF)
