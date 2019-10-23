@@ -41,8 +41,18 @@ if __name__ == '__main__': #Buenas practicas de Main
                     lista_termina_servicio[i] += client.hora_llegada + client.tiempo_tramite
                     lista_cliente_cajero[i] = client
                     break
-            else: #A ESTE ELSE SE ENTRA CUANDO NINGUN CAJERO ESTA VACÍO
-                min_ind = index(min(lista_termina_servicio))
+                else: #A ESTE ELSE SE ENTRA CUANDO NINGUN CAJERO ESTA VACÍO
+                    min_ind = index(min(lista_termina_servicio)) #regresa el index del cajero que tenga la hora de termina serivicio más pequeña
+                    if client.hora_llegada < lista_termina_servicio[min_ind]:
+                        client.inicia_servicio = lista_termina_servicio[min_ind]
+                        client.termina_servicio = client.hora_llegada + client.tiempo_tramite
+                    else:
+
+                    lista_termina_servicio[min_ind] += client.tiempo_tramite
+
+                    lista_cliente_cajero[min_ind] = client
+
+
 
 
     #fila_espera.append() #Agreaga al valor al final de la list (el valor que esté hasta la derecha)
