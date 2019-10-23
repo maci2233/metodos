@@ -38,18 +38,26 @@ if __name__ == '__main__': #Buenas practicas de Main
         else:
             for i in range(num_cajeros):
                 if  lista_cliente_cajero[i] is None: #Busca un cajero vacío
-                    lista_termina_servicio[i] += client.hora_llegada + client.tiempo_tramite
-                    lista_cliente_cajero[i] = client
+                    client.inicia_servicio = client.hora_llegada
+                    client.termina_servicio = client.inicia_servicio + client.tiempo_tramite
+                    #Tiempo de espera cliente = 0
+                    #Tiempo de inactividad atm = client.inicia_servicio - lista_termina_servicio[i]
+                    lista_termina_servicio[i] += client.hora_llegada + client.tiempo_tramite #Actualizar el termina servicio del cajero
+                    lista_cliente_cajero[i] = client #esto pa qué era?
                     break
                 else: #A ESTE ELSE SE ENTRA CUANDO NINGUN CAJERO ESTA VACÍO
                     min_ind = index(min(lista_termina_servicio)) #regresa el index del cajero que tenga la hora de termina serivicio más pequeña
                     if client.hora_llegada < lista_termina_servicio[min_ind]:
                         client.inicia_servicio = lista_termina_servicio[min_ind]
-                        client.termina_servicio = client.hora_llegada + client.tiempo_tramite
+                        client.termina_servicio = client.inicia_servicio + client.tiempo_tramite
+                        #Tiempo de espera cliente = lista_termina_servicio[min_ind] - client.hora_llegada
+                        #Tiempo de inactividad atm = 0
                     else:
-
-                    lista_termina_servicio[min_ind] += client.tiempo_tramite
-
+                        client.inicia_servicio = client.hora_llegada
+                        client.termina_servicio = client.inicia_servicio + client.tiempo_tramite
+                        #Tiempo de espera cliente = 0
+                        #Tiempo de inactividad atm = client.inicia_servicio - lista_termina_servicio[min_ind]
+                    lista_termina_servicio[min_ind] += client.termina_servicio
                     lista_cliente_cajero[min_ind] = client
 
 
