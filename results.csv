@@ -1,0 +1,6 @@
+Cliente, Num Cajero, Tiempo entre llegadas, Hora de llegada, Tiempo del trámite, Inicia Servicio, Termina Servicio, Tiempo de Espera Cliente
+1, 1, 0, 900, 3, 900, 903, 0
+2, 1, 3, 903, 3, 903, 906, 0
+3, 1, 2, 905, 8, 906, 914, 1
+4, 1, 2, 907, 10, 914, 924, 7
+5, 1, 6, 913, 9, 924, 933, 11
